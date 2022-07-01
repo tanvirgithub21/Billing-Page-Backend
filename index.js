@@ -52,6 +52,20 @@ async function run() {
     });
 
 
+    //update data--
+    //url : http://localhost:5000/task/update/:id 
+    app.put("/task/update/:id", async (req, res) => {
+      const data = req.body;
+      const itemId = req.params.id;
+      const query = { _id: ObjectId(itemId) };
+      const updateDocument = {
+        $set: { ...data },
+      };
+      const result = await tasksCollection.updateOne(query, updateDocument);
+      res.send(result);
+    });
+
+
     //POST API -- http://localhost:5000/completed
     // add task 
     app.post("/completed", async (req, res) => {
@@ -71,18 +85,17 @@ async function run() {
       res.send(result);
     });
 
-    //update data--
-    //url : http://localhost:5000/task/update/:id 
-    app.put("/task/update/:id", async (req, res) => {
-      const data = req.body;
-      const itemId = req.params.id;
-      const query = { _id: ObjectId(itemId) };
-      const updateDocument = {
-        $set: { ...data },
-      };
-      const result = await tasksCollection.updateOne(query, updateDocument);
-      res.send(result);
+
+    //delete data
+    //url : http://localhost:5000/completed/delete/:idnumber
+    app.delete("/completed/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const deleteResult = await completedCollection.deleteOne(filter);
+      res.send(deleteResult);
     });
+
+
 
 
   } finally {
@@ -95,11 +108,6 @@ run().catch(console.dir);
 app.get("/", (req, res) => {
   res.send("Todo is working")
 })
-app.get("/ooo", (req, res) => {
-  res.send("Todo is working ooo")
-})
-
-
 
 app.listen(port, () => {
   console.log('listen to port, ', port);
