@@ -17,64 +17,92 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 async function run() {
-    try {
-      await client.connect();
-      const tasksCollection = client.db("tasks").collection("task");
-      const completedCollection = client.db("Completed").collection("task");
-
-  
-        //POST API -- http://localhost:5000/task
-        // add task 
-        app.post("/task",  async (req, res) => {
-            const data = req.body   
-            const result = await tasksCollection.insertOne(data);
-            res.send(result);
-        })
-
-        //GET API -- http://localhost:5000/task
-        // get task 
-        app.get("/task", async (req, res) => {
-            const query = req.query;
-            const cursor = tasksCollection.find(query);
-            const result = await cursor.toArray();
-            res.send(result);
-          });
+  try {
+    await client.connect();
+    const tasksCollection = client.db("tasks").collection("task");
+    const completedCollection = client.db("Completed").collection("task");
 
 
-        //delete data
-        //url : http://localhost:5000/task/delete/:idnumber
-        app.delete("/task/delete/:id", async (req, res) => {
-          const id = req.params.id;
-          console.log(id);
-          const filter = { _id: ObjectId(id) };
-          const deleteResult = await tasksCollection.deleteOne(filter);
-          res.send(deleteResult);
-        });
+    //POST API -- http://localhost:5000/task
+    // add task 
+    app.post("/task", async (req, res) => {
+      const data = req.body
+      const result = await tasksCollection.insertOne(data);
+      res.send(result);
+    })
+
+    //GET API -- http://localhost:5000/task
+    // get task 
+    app.get("/task", async (req, res) => {
+      const query = req.query;
+      const cursor = tasksCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
 
-       //POST API -- http://localhost:5000/completed
-        // add task 
-        app.post("/completed",  async (req, res) => {
-          const data = req.body   
-          const result = await completedCollection.insertOne(data);
-          res.send(result);
-      })
+    //delete data
+    //url : http://localhost:5000/task/delete/:idnumber
+    app.delete("/task/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: ObjectId(id) };
+      const deleteResult = await tasksCollection.deleteOne(filter);
+      res.send(deleteResult);
+    });
 
 
-  
-    } finally {
-      // Ensures that the client will close when you finish/error
-      //   await client.close();
-    }
+    //POST API -- http://localhost:5000/completed
+    // add task 
+    app.post("/completed", async (req, res) => {
+      const data = req.body
+      const result = await completedCollection.insertOne(data);
+      res.send(result);
+    })
+
+ 
+
+    //GET API -- http://localhost:5000/completedTask
+    // get task 
+    app.get("/completedTask", async (req, res) => {
+      const query = req.query;
+      const cursor = completedCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+
+
+    //update data
+    //url : http://localhost:5000/task/update/:id 
+    app.put("/task/update/:id", async (req, res) => {
+      const data = req.body;
+      const itemId = req.params.id;
+      const query = { _id: ObjectId(itemId) };
+      const updateDocument = {
+        $set: { ...data },
+      };
+      const result = await tasksCollection.updateOne(query, updateDocument);
+      res.send(result);
+    });
+
+
+
+
+
+  } finally {
+    // Ensures that the client will close when you finish/error
+    //   await client.close();
   }
-  run().catch(console.dir);
-  
-  app.get("/", (req, res) => {
-    res.send("Todo is working")
-  })
+}
+run().catch(console.dir);
+
+app.get("/", (req, res) => {
+  res.send("Todo is working")
+})
 
 
 
-app.listen(port, ()=>{
-console.log('listen to port, ', port);
+app.listen(port, () => {
+  console.log('listen to port, ', port);
 })
