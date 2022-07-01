@@ -95,6 +95,9 @@ run().catch(console.dir);
 app.get("/", (req, res) => {
   res.send("Todo is working")
 })
+app.get("/ooo", (req, res) => {
+  res.send("Todo is working ooo")
+})
 
 
 
