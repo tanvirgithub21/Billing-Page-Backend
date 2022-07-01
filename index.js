@@ -71,9 +71,7 @@ async function run() {
       res.send(result);
     });
 
-
-
-    //update data
+    //update data--
     //url : http://localhost:5000/task/update/:id 
     app.put("/task/update/:id", async (req, res) => {
       const data = req.body;
@@ -87,11 +85,8 @@ async function run() {
     });
 
 
-
-
-
   } finally {
-    // Ensures that the client will close when you finish/error
+
     //   await client.close();
   }
 }
